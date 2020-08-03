@@ -30,4 +30,8 @@ public class UtenteResources {
         System.out.println(result);
         return ResponseEntity.ok(result);
     }
+
+    public void prova() {
+        System.out.println("hello world");
+    }
 }
