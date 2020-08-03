@@ -34,4 +34,8 @@ public class UtenteResources {
     public void prova() {
         System.out.println("hello world");
     }
+
+    public void prova2() {
+        System.out.println("prova 2 git");
+    }
 }
