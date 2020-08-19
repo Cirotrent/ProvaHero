@@ -1,8 +1,8 @@
 package com.provahero.provahero.web.dto.utente;
 
 public class UtenteCheAccede {
-    private  String user;
-    private  String password;
+    private String user;
+    private String password;
 
     @Override
     public String toString() {

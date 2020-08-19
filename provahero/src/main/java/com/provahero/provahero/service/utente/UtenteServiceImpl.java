@@ -1,10 +1,13 @@
 package com.provahero.provahero.service.utente;
 
+import com.provahero.provahero.model.Hero;
 import com.provahero.provahero.model.Utente;
 import com.provahero.provahero.repository.utente.UtenteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
@@ -12,6 +15,7 @@ public class UtenteServiceImpl implements UtenteService {
 
     @Autowired
     private UtenteRepository utenteRepository;
+
 
 
     @Override
@@ -47,11 +51,13 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Utente findByUsernameAndPassword(String user, String password) {
         return utenteRepository.findByUsernameAndPassword(user, password);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Utente findById(long id) throws Exception {
         Utente result;
         try {
@@ -59,6 +65,13 @@ public class UtenteServiceImpl implements UtenteService {
         } catch (Exception e) {
             throw new Exception("Internal server error!");
         }
+        return result;
+    }
+
+    @Override
+    public List<Hero> findAllHeroesByUtenteId(long id) {
+        List<Hero> result;
+        result= utenteRepository.findAllHeroesByUtenteId(id);
         return result;
     }
 }

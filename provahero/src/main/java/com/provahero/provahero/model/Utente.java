@@ -1,8 +1,9 @@
 package com.provahero.provahero.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "utente")
@@ -15,8 +16,12 @@ public class Utente {
     private String username;
     private String password;
 
-    @OneToMany(mappedBy = "utente", orphanRemoval = true)
+    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
     private List<Hero> heroes = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(name = "utente_ruolo", joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "ruolo_id", referencedColumnName = "ID"))
+    private Set<Ruolo> ruoli = new HashSet<>(0);
 
     @Override
     public String toString() {
@@ -69,11 +74,33 @@ public class Utente {
         this.password = password;
     }
 
+    @JsonIgnore
     public List<Hero> getHeroes() {
         return heroes;
     }
 
     public void setHeroes(List<Hero> heroes) {
         this.heroes = heroes;
+    }
+
+    public Set<Ruolo> getRuoli() {
+        return ruoli;
+    }
+
+    public void setRuoli(Set<Ruolo> ruoli) {
+        this.ruoli = ruoli;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Utente utente = (Utente) o;
+        return Objects.equals(id, utente.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }

@@ -1,7 +1,6 @@
 package com.provahero.provahero.repository.hero;
 
 import com.provahero.provahero.model.Hero;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 

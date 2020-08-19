@@ -2,21 +2,19 @@ package com.provahero.provahero.web.rest.resources;
 
 
 import com.provahero.provahero.model.Hero;
+import com.provahero.provahero.model.Utente;
 import com.provahero.provahero.repository.hero.HeroRepository;
 import com.provahero.provahero.service.hero.HeroService;
+import com.provahero.provahero.service.utente.UtenteService;
 import com.provahero.provahero.web.dto.hero.HeroDto;
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.websocket.server.PathParam;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -25,6 +23,9 @@ public class HeroResources {
 
     @Autowired
     HeroService heroService;
+
+    @Autowired
+    UtenteService utenteService;
 
     @Autowired
     private HeroRepository heroRepository;
@@ -62,6 +63,7 @@ public class HeroResources {
         if (result == null) {
             return new ResponseEntity<>("not found!", null, HttpStatus.NOT_FOUND);
         }
+
         return ResponseEntity.ok(result);
     }
 
@@ -74,7 +76,7 @@ public class HeroResources {
             return new ResponseEntity<String>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-        return ResponseEntity.ok(id);
+        return ResponseEntity.ok("Cancellazione effettuata");
     }
 
     @PostMapping(path = "/inserisci", consumes = "application/json", produces = "application/json")
@@ -106,6 +108,24 @@ public class HeroResources {
     public ResponseEntity<?>search(@RequestParam String token){
         List<Hero> result;
         result= heroService.findAllByNameContains(token);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping(path ="/buy")
+    public ResponseEntity<?> BuyHero(@RequestBody Hero hero, @RequestParam long id){
+        Hero result;
+        Utente utente;
+
+        try {
+            utente= utenteService.findById(id);
+            hero.setUtente(utente);
+            result = heroService.aggiorna(hero);
+            if (result == null) {
+                return new ResponseEntity<>("not found!", null, HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<String>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return ResponseEntity.ok(result);
     }
 

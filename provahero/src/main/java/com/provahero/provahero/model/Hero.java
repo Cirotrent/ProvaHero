@@ -1,8 +1,12 @@
 package com.provahero.provahero.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
+@Table (name = "hero")
 public class Hero {
 
     @Id
@@ -34,7 +38,7 @@ public class Hero {
         this.cognome = cognome;
         this.potenza = potenza;
     }
-
+    @JsonIgnore
     public Utente getUtente() {
         return utente;
     }
@@ -73,5 +77,18 @@ public class Hero {
 
     public void setPotenza(Integer potenza) {
         this.potenza = potenza;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Hero hero = (Hero) o;
+        return Objects.equals(id, hero.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
