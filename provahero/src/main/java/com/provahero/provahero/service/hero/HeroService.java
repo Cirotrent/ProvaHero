@@ -17,4 +17,10 @@ public interface HeroService  {
      Hero findById(long id) throws Exception;
 
      List<Hero> findAllOrderByPotenzaDesc();
+
+     List<Hero> getHeroesByUtenteId(Long id);
+
+     void rimuoviHeroDaUtente(Long idUtente,Long idHero);
+
+     List<Hero> findAllHeroesByUtenteId(Long id);
 }

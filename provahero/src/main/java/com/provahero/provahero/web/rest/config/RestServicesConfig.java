@@ -1,6 +1,7 @@
 package com.provahero.provahero.web.rest.config;
 
 import com.provahero.provahero.web.rest.resources.HeroResources;
+import com.provahero.provahero.web.rest.resources.RuoloResource;
 import com.provahero.provahero.web.rest.resources.UtenteResources;
 
 import javax.ws.rs.core.Application;
@@ -12,6 +13,7 @@ public class RestServicesConfig extends Application {
         Set<Class<?>> classes = new HashSet<Class<?>>();
         classes.add(HeroResources.class);
         classes.add(UtenteResources.class);
+        classes.add(RuoloResource.class);
         return classes;
     }
 }

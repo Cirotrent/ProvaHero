@@ -16,11 +16,23 @@ public class Utente {
     private String username;
     private String password;
 
-    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
+    //@OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
+//    private List<Hero> heroes = new ArrayList<>();
+
+    //    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+//    @JoinTable(name = "utente_hero", joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"),
+//            inverseJoinColumns = @JoinColumn(name = "hero_id", referencedColumnName = "ID"))
+//    private Set<Hero> heroes = new HashSet<>(0);
+    @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
+    @JoinTable(
+            name = "utente_hero",
+            joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "hero_id", referencedColumnName = "ID"))
     private List<Hero> heroes = new ArrayList<>();
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE})
-    @JoinTable(name = "utente_ruolo", joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"), inverseJoinColumns = @JoinColumn(name = "ruolo_id", referencedColumnName = "ID"))
+    @JoinTable(name = "utente_ruolo", joinColumns = @JoinColumn(name = "utente_id", referencedColumnName = "ID"),
+            inverseJoinColumns = @JoinColumn(name = "ruolo_id", referencedColumnName = "ID"))
     private Set<Ruolo> ruoli = new HashSet<>(0);
 
     @Override
@@ -32,6 +44,14 @@ public class Utente {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    public List<Hero> getHeroes() {
+        return heroes;
+    }
+
+    public void setHeroes(List<Hero> heroes) {
+        this.heroes = heroes;
     }
 
     public Long getId() {
@@ -74,14 +94,14 @@ public class Utente {
         this.password = password;
     }
 
-    @JsonIgnore
-    public List<Hero> getHeroes() {
-        return heroes;
-    }
-
-    public void setHeroes(List<Hero> heroes) {
-        this.heroes = heroes;
-    }
+//    @JsonIgnore
+//    public List<Hero> getHeroes() {
+//        return heroes;
+//    }
+//
+//    public void setHeroes(List<Hero> heroes) {
+//        this.heroes = heroes;
+//    }
 
     public Set<Ruolo> getRuoli() {
         return ruoli;

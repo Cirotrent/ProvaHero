@@ -69,9 +69,17 @@ public class UtenteServiceImpl implements UtenteService {
     }
 
     @Override
-    public List<Hero> findAllHeroesByUtenteId(long id) {
-        List<Hero> result;
-        result= utenteRepository.findAllHeroesByUtenteId(id);
-        return result;
+    public Utente findUtenteByIdEagerHeroes(Long id) {
+        return utenteRepository.findUtenteByIdEagerHeroes(id);
+    }
+
+    @Override
+    public Utente findUtenteByIdEagerRuoli(Long id) {
+        return utenteRepository.findUtenteByIdEagerRuoli(id);
+    }
+
+    @Override
+    public List<Utente> findAll() {
+        return (List<Utente>) utenteRepository.findAll();
     }
 }

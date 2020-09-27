@@ -2,6 +2,7 @@ package com.provahero.provahero.web.rest.resources;
 
 
 import com.provahero.provahero.model.Hero;
+import com.provahero.provahero.model.Ruolo;
 import com.provahero.provahero.model.Utente;
 import com.provahero.provahero.repository.hero.HeroRepository;
 import com.provahero.provahero.service.hero.HeroService;
@@ -16,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
-
+@CrossOrigin(maxAge = 3600)
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
+@RequestMapping("provahero")
 public class HeroResources {
 
     @Autowired
@@ -67,18 +68,6 @@ public class HeroResources {
         return ResponseEntity.ok(result);
     }
 
-    @DeleteMapping("/delete")
-    public ResponseEntity<?> delete(@RequestParam Long id) {
-        try {
-            heroService.rimuovi(id);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return new ResponseEntity<String>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        return ResponseEntity.ok("Cancellazione effettuata");
-    }
-
     @PostMapping(path = "/inserisci", consumes = "application/json", produces = "application/json")
     public ResponseEntity<?> addMember(@RequestBody Hero hero) {
         try {
@@ -104,29 +93,103 @@ public class HeroResources {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(path ="/search")
-    public ResponseEntity<?>search(@RequestParam String token){
+    @GetMapping(path = "/search")
+    public ResponseEntity<?> search(@RequestParam String token) {
         List<Hero> result;
-        result= heroService.findAllByNameContains(token);
+        result = heroService.findAllByNameContains(token);
         return ResponseEntity.ok(result);
     }
 
-    @PutMapping(path ="/buy")
-    public ResponseEntity<?> BuyHero(@RequestBody Hero hero, @RequestParam long id){
-        Hero result;
+    @PutMapping(path = "/buy")
+    public ResponseEntity<?> BuyHero(@RequestBody Hero hero, @RequestParam Long id) {
         Utente utente;
+        List<Hero> heroes;
 
         try {
-            utente= utenteService.findById(id);
-            hero.setUtente(utente);
-            result = heroService.aggiorna(hero);
-            if (result == null) {
+            utente = utenteService.findUtenteByIdEagerHeroes(id);
+            if (utente.getHeroes() != null && utente.getHeroes().contains(hero)) {
+                return new ResponseEntity<>("hero già comprato!", null, HttpStatus.LOCKED);
+            }
+            utente.getHeroes().add(hero);
+            utenteService.aggiorna(utente);
+            if (hero == null) {
                 return new ResponseEntity<>("not found!", null, HttpStatus.NOT_FOUND);
             }
         } catch (Exception e) {
             return new ResponseEntity<String>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
+        return ResponseEntity.ok(hero);
+    }
+
+
+    @GetMapping("/findAllHeroByUtenteId")
+    @ResponseBody
+    public ResponseEntity<List<Hero>> findAllheroByUtenteId(@RequestParam Long id) {
+        List<Hero> result = null;
+        try {
+            result = heroService.getHeroesByUtenteId(id);
+            System.out.println(result);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(result, null, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+        if (result == null) {
+            return new ResponseEntity<>(result, null, HttpStatus.NOT_FOUND);
+        }
+
         return ResponseEntity.ok(result);
     }
+
+    @PutMapping("/rimuoviHeroDaUtente")
+    @ResponseBody
+    public ResponseEntity<?> rimuoviHeroDaUtente(@RequestParam Long idUtente, @RequestParam Long idHero) {
+
+        System.out.println(idHero + "---- " + idUtente);
+        try {
+            heroService.rimuoviHeroDaUtente(idUtente, idHero);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return ResponseEntity.ok("Eliminazione avvenuta con successo");
+    }
+
+    @GetMapping(path = "/provaFindAllHeroesByUtenteId")
+    public ResponseEntity<?> provafindAllHeroesByUtenteId(@RequestParam Long id) {
+        List<Hero> result;
+        result = heroService.findAllHeroesByUtenteId(id);
+        return ResponseEntity.ok(result);
+    }
+
+    @PutMapping("/cancellaHero")
+    @ResponseBody
+    public ResponseEntity<?> cancellaHero(@RequestParam Long idHero, @RequestParam Long idUtente) {
+        List<Utente> allUtenti;
+        Utente utenteInSessione;
+
+        try {
+            utenteInSessione = utenteService.findUtenteByIdEagerRuoli(idUtente);
+            for (Ruolo ruolo :
+                    utenteInSessione.getRuoli()) {
+                if (ruolo.getCodice().equals(Ruolo.ADMIN_ROLE)) {
+                    allUtenti = utenteService.findAll();
+                    for (Utente utente : allUtenti
+                    ) {
+                        heroService.rimuoviHeroDaUtente(utente.getId(), idHero);
+                    }
+                    heroService.rimuovi(idHero);
+                    return ResponseEntity.ok("Cancellazione avvenuta con successo!");
+                }
+            }
+            return new ResponseEntity<>("Utente non autorizzato!", null, HttpStatus.PRECONDITION_FAILED);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("Errore", null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
+
 
 }

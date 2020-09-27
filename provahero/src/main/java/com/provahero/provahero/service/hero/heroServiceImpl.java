@@ -62,4 +62,21 @@ public class heroServiceImpl implements HeroService {
     public List<Hero> findAllOrderByPotenzaDesc() {
         return heroRepository.findAllOrderByPotenzaDesc();
     }
+
+    @Override
+    public List<Hero> getHeroesByUtenteId(Long id) {
+
+        return heroRepository.getHeroesByUtenteId(id);
+    }
+
+    @Override
+    public void rimuoviHeroDaUtente(Long idUtente, Long idHero) {
+        heroRepository.rimuoviHeroDaUtente(idUtente,idHero);
+    }
+
+    @Override
+    public List<Hero> findAllHeroesByUtenteId(Long id) {
+
+        return heroRepository.findAllHeroesByUtenteId(id);
+    }
 }

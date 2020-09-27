@@ -15,6 +15,11 @@ public interface UtenteRepository extends CrudRepository<Utente, Long> {
 
 //    @Query(value = "SELECT u from utente u where u.id=?1",nativeQuery = true)
 //    Utente findByIdUtenteTest(long id);
-@Query("from Hero h join h.utente u where u.id = ?1")
-List<Hero> findAllHeroesByUtenteId(long id);
+
+    @Query("from Utente u left join fetch u.heroes where u.id = ?1")
+    Utente findUtenteByIdEagerHeroes(Long id);
+
+    @Query("from Utente u join fetch u.ruoli where u.id = ?1")
+    Utente findUtenteByIdEagerRuoli(Long id);
+
 }

@@ -18,5 +18,9 @@ public interface UtenteService {
 
     Utente findById(long id) throws Exception;
 
-    List<Hero> findAllHeroesByUtenteId(long id);
+    Utente findUtenteByIdEagerHeroes(Long id);
+
+    Utente findUtenteByIdEagerRuoli(Long id);
+
+    List<Utente> findAll();
 }

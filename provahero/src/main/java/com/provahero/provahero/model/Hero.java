@@ -3,10 +3,10 @@ package com.provahero.provahero.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
-@Table (name = "hero")
+@Table(name = "hero")
 public class Hero {
 
     @Id
@@ -15,10 +15,19 @@ public class Hero {
     private String name;
     private String cognome;
     private Integer potenza;
+    @ManyToMany(fetch = FetchType.LAZY,
+            mappedBy = "heroes")
+    private List<Utente> utenti = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "utente_id")
-    private Utente utente;
+    //@ManyToOne(fetch = FetchType.LAZY)
+    //@JoinColumn(name = "utente_id")
+//    @ManyToOne(cascade = CascadeType.ALL,fetch = FetchType.LAZY)
+//    @JoinTable(name="utente_hero",
+//            joinColumns={
+//                    @JoinColumn(name="heroId", referencedColumnName="id")},
+//            inverseJoinColumns={
+//                    @JoinColumn(name="utenteId", referencedColumnName="id")})
+//    private Utente utente;
 
     @Override
     public String toString() {
@@ -33,18 +42,25 @@ public class Hero {
     public Hero() {
     }
 
+    public Hero(Long id, String name, String cognome, Integer potenza) {
+        this.id = id;
+        this.name = name;
+        this.cognome = cognome;
+        this.potenza = potenza;
+    }
+
     public Hero(String name, String cognome, Integer potenza) {
         this.name = name;
         this.cognome = cognome;
         this.potenza = potenza;
     }
     @JsonIgnore
-    public Utente getUtente() {
-        return utente;
+    public List<Utente> getUtenti() {
+        return utenti;
     }
 
-    public void setUtente(Utente utente) {
-        this.utente = utente;
+    public void setUtenti(List<Utente> utenti) {
+        this.utenti = utenti;
     }
 
     public Long getId() {
